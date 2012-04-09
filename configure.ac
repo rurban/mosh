@@ -54,6 +54,12 @@ AC_ARG_ENABLE([server],
   [build_server="yes"])
 AM_CONDITIONAL([BUILD_SERVER], [test x"$build_server" != xno])
 
+AC_ARG_ENABLE([tests],
+  [AS_HELP_STRING([--enable-tests], [Build tests])],
+  [build_tests="$enableval"],
+  [build_tests="no"])
+AM_CONDITIONAL([BUILD_TESTS], [test x"$build_tests" != xno])
+
 AC_ARG_ENABLE([examples],
   [AS_HELP_STRING([--enable-examples], [Build the miscellaneous programs in src/examples @<:@no@:>@])],
   [build_examples="$enableval"],
@@ -101,9 +107,10 @@ AS_IF([test x"$with_skalibs" != xno],
    AC_SUBST([STDDJB_LDFLAGS], ["$SKALIBS_LDFLAGS -lstddjb"])])
 
 # Checks for header files.
-AC_CHECK_HEADERS([arpa/inet.h curses.h fcntl.h langinfo.h limits.h locale.h netinet/in.h stddef.h stdint.h stdlib.h string.h sys/ioctl.h sys/resource.h sys/socket.h sys/time.h term.h termios.h unistd.h wchar.h wctype.h], [], [AC_MSG_ERROR([Missing required header file.])])
+AC_CHECK_HEADERS([arpa/inet.h curses.h fcntl.h langinfo.h limits.h locale.h netinet/in.h stddef.h stdint.h inttypes.h stdlib.h string.h sys/ioctl.h sys/resource.h sys/socket.h sys/time.h term.h termios.h unistd.h wchar.h wctype.h], [], [AC_MSG_ERROR([Missing required header file.])])
 
-AC_CHECK_HEADERS([pty.h util.h])
+AC_CHECK_HEADERS([pty.h util.h libutil.h])
+AC_CHECK_HEADERS([endian.h sys/endian.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_HEADER_STDBOOL
@@ -117,6 +124,7 @@ AC_TYPE_UINT16_T
 AC_TYPE_UINT32_T
 AC_TYPE_UINT64_T
 AC_TYPE_UINT8_T
+AC_TYPE_UINTPTR_T
 
 # Checks for library functions.
 AC_FUNC_FORK
@@ -151,6 +159,11 @@ AC_CHECK_DECL([signalfd],
      [Define if signalfd is available.])],
   , [[#include <sys/signalfd.h>]])
 
+AC_CHECK_DECL([forkpty],
+  [AC_DEFINE([FORKPTY_IN_LIBUTIL], [1],
+     [Define if libutil.h necessary for forkpty().])],
+  , [[#include <libutil.h>]])
+
 AC_CHECK_DECL([htobe64],
   [AC_DEFINE([HAVE_HTOBE64], [1],
   [Define if htobe64 and friends exist.])],
@@ -159,7 +172,11 @@ AC_CHECK_DECL([htobe64],
         [Define if OSSwapHostToBigInt64 and friends exist.])],
      [AC_MSG_ERROR([Unable to find byte swapping functions])],
      [[#include <libkern/OSByteOrder.h>]])],
-  [[#include <endian.h>]])
+  [[#if defined(HAVE_ENDIAN_H)
+#include <endian.h>
+#elif defined(HAVE_SYS_ENDIAN_H)
+#include <sys/endian.h>
+#endif]])
 
 AC_CHECK_DECL([IP_MTU_DISCOVER],
   [AC_DEFINE([HAVE_IP_MTU_DISCOVER], [1],
@@ -194,6 +211,7 @@ AC_CONFIG_FILES([
   src/util/Makefile
   scripts/Makefile
   src/examples/Makefile
+  src/tests/Makefile
   man/Makefile
 ])
 AC_OUTPUT

@@ -56,6 +56,10 @@ extern "C" {
 #include <util.h>
 #endif
 
+#if FORKPTY_IN_LIBUTIL
+#include <libutil.h>
+#endif
+
 #include "networktransport.cc"
 
 typedef Network::Transport< Terminal::Complete, Network::UserStream > ServerConnection;

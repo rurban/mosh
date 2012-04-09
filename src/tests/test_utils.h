@@ -16,23 +16,17 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef BYTEORDER_HPP
-#define BYTEORDER_HPP
+#ifndef TEST_UTILS_HPP
+#define TEST_UTILS_HPP
 
-#include "config.h"
+#include <string>
 
-#ifdef HAVE_HTOBE64
-# if defined(HAVE_ENDIAN_H)
-#  include <endian.h>
-# elif defined(HAVE_SYS_ENDIAN_H)
-#  include <sys/endian.h>
-# endif
-#elif HAVE_OSX_SWAP
-# include <libkern/OSByteOrder.h>
-# define htobe64 OSSwapHostToBigInt64
-# define be64toh OSSwapBigToHostInt64
-# define htobe16 OSSwapHostToBigInt16
-# define be16toh OSSwapBigToHostInt16
-#endif
+#include "crypto.h"
+
+#define DUMP_NAME_FMT "%-10s "
+
+void hexdump( const void *buf, size_t len, const char *name );
+void hexdump( const Crypto::AlignedBuffer &buf, const char *name );
+void hexdump( const std::string &buf, const char *name );
 
 #endif
