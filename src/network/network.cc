@@ -73,7 +73,8 @@ string Packet::tostring( Session *session )
 {
   uint64_t direction_seq = (uint64_t( direction == TO_CLIENT ) << 63) | (seq & SEQUENCE_MASK);
 
-  uint16_t ts_net[ 2 ] = { htobe16( timestamp ), htobe16( timestamp_reply ) };
+  uint16_t ts_net[ 2 ] = { static_cast<uint16_t>( htobe16( timestamp ) ),
+                           static_cast<uint16_t>( htobe16( timestamp_reply ) ) };
 
   string timestamps = string( (char *)ts_net, 2 * sizeof( uint16_t ) );
 
@@ -114,6 +115,12 @@ void Connection::setup( void )
     throw NetworkException( "setsockopt", errno );
   }
 #endif
+
+ /* set diffserv values to AF42 + ECT */
+  uint8_t dscp = 0x92;
+  if ( setsockopt( sock, IPPROTO_IP, IP_TOS, &dscp, 1) < 0 ) {
+    //    perror( "setsockopt( IP_TOS )" );
+  }
 }
 
 Connection::Connection( const char *desired_ip, const char *desired_port ) /* server */

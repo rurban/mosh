@@ -1,3 +1,62 @@
+mosh (1.2.2-1) unstable; urgency=low
+
+  * Version 1.2.2 released.
+
+  * Remove warning on out-of-order/duplicated datagrams
+
+  * Add "experimental" prediction mode
+
+ -- Keith Winstein <keithw@mit.edu>  Tue, 12 Jun 2012 14:52:17 -0400
+
+mosh (1.2.1-1) unstable; urgency=low
+
+  * Version 1.2.1 released.
+
+  * Warning on out-of-order/duplicated datagrams (or failed nonce increment)
+
+  * Clearer error message on invalid port number
+
+ -- Keith Winstein <keithw@mit.edu>  Fri, 25 May 2012 18:03:31 -0400
+
+mosh (1.2.0.97-1) unstable; urgency=low
+
+  * Cosmetic cleanups to quit sequence when server is firewalled
+
+ -- Keith Winstein <keithw@mit.edu>  Wed, 23 May 2012 12:16:47 -0400
+
+mosh (1.2.0.96-1) unstable; urgency=low
+
+  * Include bash_completion file (ejeffrey)
+
+  * Include UFW firewall profile (Fumihito YOSHIDA)
+
+ -- Keith Winstein <keithw@mit.edu>  Wed, 23 May 2012 07:05:54 -0400
+
+mosh (1.2.0.95-1) unstable; urgency=low
+
+  * Improve performance on lossy links.
+
+  * New diagnostic message when link is dead in only one direction.
+
+  * Use less CPU when link is down. (Keegan McAllister)
+
+  * Use much less CPU when application or mosh-server sends
+    large repeat counts (resolves CVE-2012-2385, reported by
+    Timo Juhani Lindfors).
+
+  * Use less memory when mosh-server is malicious.
+
+  * Fix vttest regression re: wrapping and tabs.
+
+  * Enable roundtrip verifier of terminal emulator correctness
+    when verbose.
+
+  * Remove skalibs as a dependency. (Keegan McAllister)
+
+  * Remove use of poll() and OS X poll workaround. (Keegan McAllister)
+
+ -- Keith Winstein <keithw@mit.edu>  Wed, 23 May 2012 03:36:13 -0400
+
 mosh (1.2-1) unstable; urgency=low
 
   * Version 1.2 released.
