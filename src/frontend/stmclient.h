@@ -36,7 +36,6 @@ private:
 
   struct termios saved_termios, raw_termios;
 
-  int signal_fd;
   struct winsize window_size;
 
   Terminal::Framebuffer *local_framebuffer, *new_state;
@@ -65,7 +64,6 @@ public:
   STMClient( const char *s_ip, int s_port, const char *s_key, const char *predict_mode )
     : ip( s_ip ), port( s_port ), key( s_key ),
       saved_termios(), raw_termios(),
-      signal_fd(),
       window_size(),
       local_framebuffer( NULL ),
       new_state( NULL ),
@@ -84,6 +82,8 @@ public:
 	overlays.get_prediction_engine().set_display_preference( Overlay::PredictionEngine::Never );
       } else if ( !strcmp( predict_mode, "adaptive" ) ) {
 	overlays.get_prediction_engine().set_display_preference( Overlay::PredictionEngine::Adaptive );
+      } else if ( !strcmp( predict_mode, "experimental" ) ) {
+	overlays.get_prediction_engine().set_display_preference( Overlay::PredictionEngine::Experimental );
       } else {
 	fprintf( stderr, "Unknown prediction mode %s.\n", predict_mode );
 	exit( 1 );

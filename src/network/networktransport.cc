@@ -16,7 +16,6 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <assert.h>
 #include <iostream>
 
 #include "networktransport.h"
@@ -92,6 +91,21 @@ void Transport<MyState, RemoteState>::recv( void )
       return; /* this is security-sensitive and part of how we enforce idempotency */
     }
     
+    /* Do not accept state if our queue is full */
+    /* This is better than dropping states from the middle of the
+       queue (as sender does), because we don't want to ACK a state
+       and then discard it later. */
+
+    process_throwaway_until( inst.throwaway_num() );
+
+    if ( received_states.size() > 1024 ) { /* limit on state queue */
+      if ( verbose ) {
+	fprintf( stderr, "[%u] Receiver queue full, discarding %d (malicious sender or long-unidirectional connectivity?)\n",
+		 (unsigned int)(timestamp() % 100000), (int)inst.new_num() );
+      }
+      return;
+    }
+
     /* apply diff to reference state */
     TimestampedState<RemoteState> new_state = *reference_state;
     new_state.timestamp = timestamp();
@@ -100,8 +114,6 @@ void Transport<MyState, RemoteState>::recv( void )
     if ( !inst.diff().empty() ) {
       new_state.state.apply_string( inst.diff() );
     }
-
-    process_throwaway_until( inst.throwaway_num() );
 
     /* Insert new state in sorted place */
     for ( typename list< TimestampedState<RemoteState> >::iterator i = received_states.begin();
@@ -144,7 +156,7 @@ void Transport<MyState, RemoteState>::process_throwaway_until( uint64_t throwawa
     i = inext;
   }
 
-  assert( received_states.size() > 0 );
+  fatal_assert( received_states.size() > 0 );
 }
 
 template <class MyState, class RemoteState>
